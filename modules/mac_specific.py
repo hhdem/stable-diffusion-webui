@@ -1,6 +1,6 @@
 import torch
 import platform
-from modules import paths
+# from modules import paths
 from modules.sd_hijack_utils import CondFunc
 from packaging import version
 
@@ -27,7 +27,6 @@ def cumsum_fix(input, cumsum_func, *args, **kwargs):
         elif output_dtype == torch.bool or cumsum_needs_int_fix and (output_dtype == torch.int8 or output_dtype == torch.int16):
             return cumsum_func(input.to(torch.int32), *args, **kwargs).to(torch.int64)
     return cumsum_func(input, *args, **kwargs)
-
 
 if has_mps:
     # MPS fix for randn in torchsde

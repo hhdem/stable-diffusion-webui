@@ -7,11 +7,14 @@ class CondFunc:
             func_path = orig_func.split('.')
             for i in range(len(func_path)-1, -1, -1):
                 try:
-                    resolved_obj = importlib.import_module('.'.join(func_path[:i]))
-                    break
+                    if len(func_path[:i]) > 0:
+                        # print(func_path[:i])
+                        resolved_obj = importlib.import_module('.'.join(func_path[:i]))
+                        break
                 except ImportError:
                     pass
             for attr_name in func_path[i:-1]:
+                # print(attr_name)
                 resolved_obj = getattr(resolved_obj, attr_name)
             orig_func = getattr(resolved_obj, func_path[-1])
             setattr(resolved_obj, func_path[-1], lambda *args, **kwargs: self(*args, **kwargs))

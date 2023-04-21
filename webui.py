@@ -25,7 +25,6 @@ startup_timer.record("import torch")
 import gradio
 startup_timer.record("import gradio")
 
-import ldm.modules.encoders.modules
 startup_timer.record("import ldm")
 
 from modules import extra_networks, ui_extra_networks_checkpoints
@@ -100,7 +99,6 @@ Use --skip-version-check commandline argument to disable this check.
 
 def initialize():
     check_versions()
-
     extensions.list_extensions()
     localization.list_localizations(cmd_opts.localizations_dir)
     startup_timer.record("list extensions")
@@ -109,7 +107,6 @@ def initialize():
         shared.sd_upscalers = upscaler.UpscalerLanczos().scalers
         modules.scripts.load_scripts()
         return
-
     modelloader.cleanup_models()
     modules.sd_models.setup_model()
     startup_timer.record("list SD models")
@@ -119,7 +116,6 @@ def initialize():
 
     gfpgan.setup_model(cmd_opts.gfpgan_models_path)
     startup_timer.record("setup gfpgan")
-
     modelloader.list_builtin_upscalers()
     startup_timer.record("list builtin upscalers")
 
@@ -131,7 +127,6 @@ def initialize():
 
     modules.sd_vae.refresh_vae_list()
     startup_timer.record("refresh VAE")
-
     modules.textual_inversion.textual_inversion.list_textual_inversion_templates()
     startup_timer.record("refresh textual inversion templates")
 
@@ -223,7 +218,7 @@ def api_only():
     api = create_api(app)
 
     modules.script_callbacks.app_started_callback(None, app)
-
+    modules.script_callbacks.before_ui_callback()
     print(f"Startup time: {startup_timer.summary()}.")
     api.launch(server_name="0.0.0.0" if cmd_opts.listen else "127.0.0.1", port=cmd_opts.port if cmd_opts.port else 7861)
 
