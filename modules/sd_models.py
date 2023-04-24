@@ -154,8 +154,8 @@ def model_hash(filename):
         return 'NOFILE'
 
 
-def select_checkpoint():
-    model_checkpoint = shared.opts.sd_model_checkpoint
+def select_checkpoint(sd_model_checkpoint = shared.opts.sd_model_checkpoint):
+    model_checkpoint = sd_model_checkpoint
         
     checkpoint_info = checkpoint_alisases.get(model_checkpoint, None)
     if checkpoint_info is not None:

@@ -10,13 +10,16 @@ before_ui_callback()
 from modules.txt2img import txt2img
 import json
 from flask import Flask, jsonify, request
-from flask_jwt import JWT, jwt_required, current_identity
+from flask_jwt import JWT, jwt_required, timedelta
 from werkzeug.security import hmac
 import base64
 from io import BytesIO
 import modules.sd_models
 
-def generateImage(prompt:str = "a cat", model:str = "", width:int = 512, height:int = 512):
+def generateImage(prompt:str = "a cat", width:int = 512, height:int = 512, model:str = ""):
+    if model != "":
+        checkpoint = modules.sd_models.select_checkpoint(model)
+        modules.sd_models.load_model(checkpoint)
     id_task = "my-task"
     negative_prompt = ""
     prompt_styles = []
@@ -103,7 +106,8 @@ def identity(payload):
 
 app = Flask(__name__)
 app.debug = True
-app.config['SECRET_KEY'] = 'super-secret'
+app.config['SECRET_KEY'] = 'epub-sd-api-secret'
+app.config['JWT_EXPIRATION_DELTA'] = timedelta(seconds=7200)
 
 jwt = JWT(app, authenticate, identity)
 
@@ -114,7 +118,8 @@ def generate():
     prompt = data['prompt']
     width = data['width']
     height = data['height']
-    result = generateImage(prompt)
+    model = data['model']
+    result = generateImage(prompt, width, height, model)
     return result
 
 @app.route("/list_models", methods=['POST'])
@@ -123,6 +128,14 @@ def list_models():
     list = modules.sd_models.checkpoint_tiles()
     return jsonify(list)
 
+@app.route("/load_model", methods=['POST'])
+@jwt_required()
+def load_models():
+    data = request.get_json()
+    model = data['model']
+    checkpoint = modules.sd_models.select_checkpoint(model)
+    modules.sd_models.load_model(checkpoint)
+    return 'success'
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
