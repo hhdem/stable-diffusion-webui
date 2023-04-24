@@ -9,13 +9,15 @@ before_ui_callback()
 
 from modules.txt2img import txt2img
 import json
-from flask import Flask
+from flask import Flask, jsonify, request
 from flask_jwt import JWT, jwt_required, current_identity
 from werkzeug.security import hmac
+import base64
+from io import BytesIO
+import modules.sd_models
 
-def generateImage():
+def generateImage(prompt:str = "a cat", model:str = "", width:int = 512, height:int = 512):
     id_task = "my-task"
-    prompt = "a cat"
     negative_prompt = ""
     prompt_styles = []
     steps = 11
@@ -50,12 +52,13 @@ def generateImage():
     # print output parameters
     info = json.loads(info_str)
     print(json.dumps(info, indent=4))
-
     # save images
     for i, image in enumerate(images):
-        filename = f"{id_task}-{i}.png"
-        image.save(filename)
-        return f"Saved {filename} ({image.size[0]}x{image.size[1]} pixels"
+        img_buffer = BytesIO()
+        image.save(img_buffer, format='PNG')
+        img_bytes = img_buffer.getvalue()
+        base64_str = base64.b64encode(img_bytes).decode('utf-8')
+        return jsonify({'base64_str': "data:image/png;base64," + base64_str})
 
 def safe_str_cmp(a: str, b: str) -> bool:
     """This function compares strings in somewhat constant time. This
@@ -104,11 +107,22 @@ app.config['SECRET_KEY'] = 'super-secret'
 
 jwt = JWT(app, authenticate, identity)
 
-@app.route("/generate")
+@app.route("/generate", methods=['POST'])
 @jwt_required()
 def generate():
-    # result = generateImage()
-    return f"<p>Hello, World!</p>"
+    data = request.get_json()
+    prompt = data['prompt']
+    width = data['width']
+    height = data['height']
+    result = generateImage(prompt)
+    return result
+
+@app.route("/list_models", methods=['POST'])
+@jwt_required()
+def list_models():
+    list = modules.sd_models.checkpoint_tiles()
+    return jsonify(list)
+
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
