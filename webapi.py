@@ -8,7 +8,6 @@ from modules.script_callbacks import before_ui_callback
 before_ui_callback()
 
 from modules.txt2img import txt2img
-import json
 from flask import Flask, jsonify, request
 from flask_jwt import JWT, jwt_required, timedelta
 from werkzeug.security import hmac
@@ -137,5 +136,5 @@ def load_models():
     modules.sd_models.load_model(checkpoint)
     return 'success'
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+# if __name__ == '__main__':
+#     app.run(host='0.0.0.0')
