@@ -53,8 +53,8 @@ def generateImage(prompt:str = "a cat", width:int = 512, height:int = 512, model
                         height, width, enable_hr, denoising_strength, hr_scale, hr_upscaler,
                         hr_second_pass_steps, hr_resize_x, hr_resize_y, override_settings_texts, 0)
     # print output parameters
-    info = json.loads(info_str)
-    print(json.dumps(info, indent=4))
+    # info = json.loads(info_str)
+    # print(json.dumps(info, indent=4))
     # save images
     for i, image in enumerate(images):
         img_buffer = BytesIO()
@@ -118,7 +118,7 @@ def generate():
     prompt = data['prompt']
     width = data['width']
     height = data['height']
-    model = data['model']
+    model = data.get('model', "")
     result = generateImage(prompt, width, height, model)
     return result
 
