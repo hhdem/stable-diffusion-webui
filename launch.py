@@ -343,11 +343,7 @@ from werkzeug.security import hmac
 from webapi import authenticate, generateImage, identity
 import modules
 
-app = Flask(__name__)
-app.debug = True
-app.config['SECRET_KEY'] = 'epub-sd-api-secret'
-app.config['JWT_EXPIRATION_DELTA'] = timedelta(seconds=7200)
-jwt = JWT(app, authenticate, identity)
+
 
 def start():
     print(f"Launching {'API server' if '--nowebui' in sys.argv else 'Web UI'} with arguments: {' '.join(sys.argv[1:])}")
@@ -362,36 +358,42 @@ def start():
 
     from modules.script_callbacks import before_ui_callback
     before_ui_callback()
+
+    app = Flask(__name__)
+    app.debug = True
+    app.config['SECRET_KEY'] = 'epub-sd-api-secret'
+    app.config['JWT_EXPIRATION_DELTA'] = timedelta(seconds=7200)
+    jwt = JWT(app, authenticate, identity)
     
-@app.route("/generate", methods=['POST'])
-@jwt_required()
-def generate():
-    data = request.get_json()
-    prompt = data['prompt']
-    width = data['width']
-    height = data['height']
-    model = data.get('model', "")
-    result = generateImage(prompt, width, height, model)
-    return result
+    @app.route("/generate", methods=['POST'])
+    @jwt_required()
+    def generate():
+        data = request.get_json()
+        prompt = data['prompt']
+        width = data['width']
+        height = data['height']
+        model = data.get('model', "")
+        result = generateImage(prompt, width, height, model)
+        return result
 
-@app.route("/list_models", methods=['POST'])
-@jwt_required()
-def list_models():
-    list = modules.sd_models.checkpoint_tiles()
-    return jsonify(list)
+    @app.route("/list_models", methods=['POST'])
+    @jwt_required()
+    def list_models():
+        list = modules.sd_models.checkpoint_tiles()
+        return jsonify(list)
 
-@app.route("/load_model", methods=['POST'])
-@jwt_required()
-def load_models():
-    data = request.get_json()
-    model = data['model']
-    checkpoint = modules.sd_models.select_checkpoint(model)
-    modules.sd_models.load_model(checkpoint)
-    return 'success'
+    @app.route("/load_model", methods=['POST'])
+    @jwt_required()
+    def load_models():
+        data = request.get_json()
+        model = data['model']
+        checkpoint = modules.sd_models.select_checkpoint(model)
+        modules.sd_models.load_model(checkpoint)
+        return 'success'
 
-
+    app.run(host='0.0.0.0')
 
 if __name__ == "__main__":
     prepare_environment()
     start()
-    app.run(host='0.0.0.0')
+    
