@@ -12,7 +12,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     fi
 fi
 
-export COMMANDLINE_ARGS="--skip-torch-cuda-test --upcast-sampling --no-half-vae --use-cpu interrogate"
+export COMMANDLINE_ARGS="--skip-torch-cuda-test"
 
 # Read variables from webui-user.sh
 # shellcheck source=/dev/null
