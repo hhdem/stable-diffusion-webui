@@ -29,5 +29,6 @@ safetensors==0.3.0
 httpcore<=0.15
 fastapi==0.94.0
 flask
-flask_jwt
+flask_jwt_extended
+PyJWT==2.6.0
 werkzeug

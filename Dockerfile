@@ -3,13 +3,12 @@ FROM python:3.10.9-slim
 
 ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1
 
-RUN apt-get update && apt install fonts-dejavu-core rsync git jq moreutils -y && apt-get clean
-
+RUN apt-get update && apt install fonts-dejavu-core rsync git jq moreutils -y && apt-get clean && apt-get install ffmpeg libsm6 libxext6 -y
 
 RUN --mount=type=cache,target=/root/.cache/pip \
   git clone https://github.com/hhdem/stable-diffusion-webui && \
-  cd stable-diffusion-webui && \
-  pip install -r requirements_versions.txt
+  cd stable-diffusion-webui
+  # pip install -r requirements_versions.txt
 
 ENV ROOT=/stable-diffusion-webui
 
@@ -20,4 +19,9 @@ ENV CLI_ARGS=""
 EXPOSE 5000
 # ENTRYPOINT ["/docker/entrypoint.sh"]
 # CMD python -u webapi.py --listen --port 5000 ${CLI_ARGS}
-CMD ./webui.sh
+CMD ./webui.sh 
+
+# sudo docker build -t sdapi . --no-cache
+# sudo docker run --gpus all -itd -p 5000:5000 sdapi
+# sudo docker container ls -a
+# sudo docker logs -f 07481a3b0873

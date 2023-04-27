@@ -11,7 +11,6 @@
 
 from modules.txt2img import txt2img
 from flask import Flask, jsonify, request
-from flask_jwt import JWT, jwt_required, timedelta
 from werkzeug.security import hmac
 import base64
 from io import BytesIO

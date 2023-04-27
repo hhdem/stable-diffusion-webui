@@ -1,4 +1,5 @@
 # this scripts installs necessary requirements and launches main program in webui.py
+from datetime import timedelta
 import subprocess
 import os
 import sys
@@ -337,10 +338,6 @@ def tests(test_dir):
     proc.kill()
     return exitcode
 
-
-
-
-
 def start():
     print(f"Launching {'API server' if '--nowebui' in sys.argv else 'Web UI'} with arguments: {' '.join(sys.argv[1:])}")
     # import webui
@@ -355,18 +352,36 @@ def start():
     from modules.script_callbacks import before_ui_callback
     before_ui_callback()
 
-    from flask import Flask, jsonify, request
-    from flask_jwt import JWT, jwt_required, timedelta
-    from werkzeug.security import hmac
-    from webapi import authenticate, generateImage, identity
+    from webapi import generateImage
+
+    from flask import Flask
+    from flask import jsonify
+    from flask import request
+
+    from flask_jwt_extended import create_access_token
+    from flask_jwt_extended import get_jwt_identity
+    from flask_jwt_extended import jwt_required
+    from flask_jwt_extended import JWTManager
+
     import modules
 
     app = Flask(__name__)
     app.debug = True
-    app.config['SECRET_KEY'] = 'epub-sd-api-secret'
-    app.config['JWT_EXPIRATION_DELTA'] = timedelta(seconds=7200)
-    jwt = JWT(app, authenticate, identity)
+    app.config['JWT_SECRET_KEY'] = 'epub-sd-api-secret'
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=120)
+    # jwt = JWT(app, authenticate, identity)
+    jwt = JWTManager(app)
     
+    @app.route("/login", methods=["POST"])
+    def login():
+        username = request.json.get("username", None)
+        password = request.json.get("password", None)
+        if username != "user1" or password != "abcxyz":
+            return jsonify({"msg": "Bad username or password"}), 401
+
+        access_token = create_access_token(identity=username)
+        return jsonify(access_token=access_token)
+
     @app.route("/generate", methods=['POST'])
     @jwt_required()
     def generate():
