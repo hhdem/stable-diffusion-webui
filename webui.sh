@@ -12,8 +12,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     fi
 fi
 
-export COMMANDLINE_ARGS="--skip-torch-cuda-test --upcast-sampling --no-half-vae --use-cpu interrogate"
-
 # Read variables from webui-user.sh
 # shellcheck source=/dev/null
 if [[ -f webui-user.sh ]]
@@ -58,7 +56,7 @@ then
 fi
 
 # this script cannot be run as root by default
-can_run_as_root=1
+can_run_as_root=0
 
 # read any command line flags to the webui.sh script
 while getopts "f" flag > /dev/null 2>&1

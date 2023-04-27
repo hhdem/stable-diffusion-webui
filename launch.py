@@ -9,7 +9,6 @@ import json
 
 from modules import cmd_args
 from modules.paths_internal import script_path, extensions_dir
-from webapi import authenticate, identity, generateImage
 
 commandline_args = os.environ.get('COMMANDLINE_ARGS', "")
 sys.argv += shlex.split(commandline_args)
@@ -43,17 +42,13 @@ def check_python_version():
 
         modules.errors.print_error_explanation(f"""
 INCOMPATIBLE PYTHON VERSION
-
 This program is tested with 3.10.6 Python, but you have {major}.{minor}.{micro}.
 If you encounter an error with "RuntimeError: Couldn't install torch." message,
 or any other error regarding unsuccessful package (library) installation,
 please downgrade (or upgrade) to the latest version of 3.10 Python
 and delete current Python and "venv" folder in WebUI's directory.
-
 You can download 3.10 Python from here: https://www.python.org/downloads/release/python-3109/
-
 {"Alternatively, use a binary release of WebUI: https://github.com/AUTOMATIC1111/stable-diffusion-webui/releases" if is_windows else ""}
-
 Use --skip-python-version-check to suppress this warning.
 """)
 
@@ -342,29 +337,32 @@ def tests(test_dir):
     proc.kill()
     return exitcode
 
-
-def start():
-    print(f"Launching {'API server' if '--nowebui' in sys.argv else 'Web UI'} with arguments: {' '.join(sys.argv[1:])}")
-    import webui
-    if '--nowebui' in sys.argv:
-        webui.api_only()
-    else:
-        webui.webui()
-
 from flask import Flask, jsonify, request
 from flask_jwt import JWT, jwt_required, timedelta
 from werkzeug.security import hmac
-import base64
-from io import BytesIO
-import modules.sd_models
+from webapi import authenticate, generateImage, identity
+import modules
 
 app = Flask(__name__)
 app.debug = True
 app.config['SECRET_KEY'] = 'epub-sd-api-secret'
 app.config['JWT_EXPIRATION_DELTA'] = timedelta(seconds=7200)
-
 jwt = JWT(app, authenticate, identity)
 
+def start():
+    print(f"Launching {'API server' if '--nowebui' in sys.argv else 'Web UI'} with arguments: {' '.join(sys.argv[1:])}")
+    # import webui
+    # if '--nowebui' in sys.argv:
+    #     webui.api_only()
+    # else:
+    #     webui.webui()
+
+    from webui import initialize
+    initialize()
+
+    from modules.script_callbacks import before_ui_callback
+    before_ui_callback()
+    
 @app.route("/generate", methods=['POST'])
 @jwt_required()
 def generate():
@@ -392,7 +390,8 @@ def load_models():
     return 'success'
 
 
+
 if __name__ == "__main__":
     prepare_environment()
+    start()
     app.run(host='0.0.0.0')
-    # start()

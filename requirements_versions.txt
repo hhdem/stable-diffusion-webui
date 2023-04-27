@@ -31,4 +31,3 @@ fastapi==0.94.0
 flask
 flask_jwt
 werkzeug
-fastapi
