@@ -337,11 +337,7 @@ def tests(test_dir):
     proc.kill()
     return exitcode
 
-from flask import Flask, jsonify, request
-from flask_jwt import JWT, jwt_required, timedelta
-from werkzeug.security import hmac
-from webapi import authenticate, generateImage, identity
-import modules
+
 
 
 
@@ -358,6 +354,12 @@ def start():
 
     from modules.script_callbacks import before_ui_callback
     before_ui_callback()
+
+    from flask import Flask, jsonify, request
+    from flask_jwt import JWT, jwt_required, timedelta
+    from werkzeug.security import hmac
+    from webapi import authenticate, generateImage, identity
+    import modules
 
     app = Flask(__name__)
     app.debug = True
