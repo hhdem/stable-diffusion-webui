@@ -368,7 +368,7 @@ def start():
     app = Flask(__name__)
     app.debug = True
     app.config['JWT_SECRET_KEY'] = 'epub-sd-api-secret'
-    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=120)
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = None
     # jwt = JWT(app, authenticate, identity)
     jwt = JWTManager(app)
     
@@ -379,7 +379,7 @@ def start():
         if username != "user1" or password != "abcxyz":
             return jsonify({"msg": "Bad username or password"}), 401
 
-        access_token = create_access_token(identity=username)
+        access_token = create_access_token(identity=username, expires_delta=None)
         return jsonify(access_token=access_token)
 
     @app.route("/generate", methods=['POST'])

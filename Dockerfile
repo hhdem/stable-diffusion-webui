@@ -10,6 +10,11 @@ RUN --mount=type=cache,target=/root/.cache/pip \
   cd stable-diffusion-webui
   # pip install -r requirements_versions.txt
 
+# copy folder models/Stable-diffusion to /stable-diffusion-webui/models/Stable-diffusion
+COPY ./models/Stable-diffusion /stable-diffusion-webui/models/Stable-diffusion
+# RUN ln -s ./models/Stable-diffusion/Dungeons_N_Waifu's_New_Version_2.2 /proj/suchka/image-generation/stable-diffusion-webui/models/Stable-diffusion/Dungeons_N_Waifu's_New_Version_2.2
+
+
 ENV ROOT=/stable-diffusion-webui
 
 WORKDIR ${ROOT}
@@ -22,6 +27,7 @@ EXPOSE 5000
 CMD ./webui.sh 
 
 # sudo docker build -t sdapi . --no-cache
-# sudo docker run --gpus all -itd -p 5000:5000 sdapi
+# sudo docker run --name sdapi --rm --gpus all -itd -p 10.0.0.1:5000:5000 sdapi
 # sudo docker container ls -a
-# sudo docker logs -f 07481a3b0873
+# sudo docker logs -f sdapi
+# sudo docker container stop sdapi
