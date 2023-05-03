@@ -25,7 +25,7 @@ def generateImage(prompt:str = "a cat", width:int = 512, height:int = 512, model
     negative_prompt = ""
     prompt_styles = []
     steps = 11
-    sampler_index = 'DPM++ SDE Karras'
+    sampler_index = 16
     restore_faces = False
     tiling = False
     n_iter = 1
