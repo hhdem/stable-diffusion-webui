@@ -368,7 +368,6 @@ def start():
     app = Flask(__name__)
     app.debug = True
     app.config['JWT_SECRET_KEY'] = 'epub-sd-api-secret'
-    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = None
     # jwt = JWT(app, authenticate, identity)
     jwt = JWTManager(app)
     
