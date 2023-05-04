@@ -24,7 +24,7 @@ ENV CLI_ARGS=""
 EXPOSE 5000
 # ENTRYPOINT ["/docker/entrypoint.sh"]
 # CMD python -u webapi.py --listen --port 5000 ${CLI_ARGS}
-CMD ./webui.sh 
+CMD CUDA_VISIBLE_DEVICES=1 ./webui.sh 
 
 # sudo docker build -t sdapi . --no-cache
 # sudo docker run --name sdapi --rm --gpus all -itd -p 10.0.0.1:5000:5000 sdapi
