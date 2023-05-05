@@ -24,6 +24,7 @@ def generateImage(prompt:str = "a cat", width:int = 512, height:int = 512, model
     # get a timestamp
     import time
     timestamp = str(int(time.time()))
+    print("timestamp seed: " + timestamp)
 
     id_task = "my-task"
     negative_prompt = ""
