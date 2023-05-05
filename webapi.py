@@ -21,6 +21,10 @@ def generateImage(prompt:str = "a cat", width:int = 512, height:int = 512, model
         checkpoint = modules.sd_models.select_checkpoint(model)
         modules.sd_models.load_model(checkpoint)
 
+    # get a timestamp
+    import time
+    timestamp = str(int(time.time()))
+
     id_task = "my-task"
     negative_prompt = ""
     prompt_styles = []
@@ -31,7 +35,7 @@ def generateImage(prompt:str = "a cat", width:int = 512, height:int = 512, model
     n_iter = 1
     batch_size = 1
     cfg_scale = 7
-    seed = -1
+    seed = timestamp
     subseed = -1
     subseed_strength = 0
     seed_resize_from_h = 0
