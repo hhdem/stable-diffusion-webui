@@ -42,8 +42,6 @@ def generateImage(prompt:str = "a cat", width:int = 512, height:int = 512, model
     seed_resize_from_h = 0
     seed_resize_from_w = 0
     seed_enable_extras = False
-    height = 512
-    width = 512
     enable_hr = False
     denoising_strength = 0.7
     hr_scale = 2.0
