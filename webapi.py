@@ -36,7 +36,7 @@ def generateImage(prompt:str = "a cat", width:int = 512, height:int = 512, model
     n_iter = 1
     batch_size = 1
     cfg_scale = 7
-    seed = timestamp
+    seed = 1234
     subseed = -1
     subseed_strength = 0
     seed_resize_from_h = 0
