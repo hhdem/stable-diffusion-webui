@@ -31,3 +31,6 @@ torchsde
 safetensors
 psutil
 rich
+replicate
+requests
+base64
