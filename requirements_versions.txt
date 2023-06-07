@@ -34,4 +34,3 @@ PyJWT==2.6.0
 werkzeug
 replicate
 requests
-base64
