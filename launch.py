@@ -1,4 +1,5 @@
 # this scripts installs necessary requirements and launches main program in webui.py
+import base64
 from datetime import timedelta
 import subprocess
 import os
@@ -7,6 +8,8 @@ import importlib.util
 import shlex
 import platform
 import json
+
+import requests
 
 from modules import cmd_args
 from modules.paths_internal import script_path, extensions_dir
@@ -346,13 +349,13 @@ def start():
     # else:
     #     webui.webui()
 
-    from webui import initialize
-    initialize()
+    # from webui import initialize
+    # initialize()
 
-    from modules.script_callbacks import before_ui_callback
-    before_ui_callback()
+    # from modules.script_callbacks import before_ui_callback
+    # before_ui_callback()
 
-    from webapi import generateImage
+    # from webapi import generateImage
 
     from flask import Flask
     from flask import jsonify
@@ -364,10 +367,13 @@ def start():
     from flask_jwt_extended import JWTManager
 
     import modules
+    import replicate
 
     app = Flask(__name__)
     app.debug = True
     app.config['JWT_SECRET_KEY'] = 'epub-sd-api-secret'
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=365)
+
     # jwt = JWT(app, authenticate, identity)
     jwt = JWTManager(app)
     
@@ -389,8 +395,21 @@ def start():
         width = data['width']
         height = data['height']
         model = data.get('model', "")
-        result = generateImage(prompt, width, height, model)
-        return result
+        # result = generateImage(prompt, width, height, model)
+        output = replicate.run(
+            "ai-forever/kandinsky-2:601eea49d49003e6ea75a11527209c4f510a93e2112c969d548fbb45b9c4f19f",
+            input={"prompt": prompt}
+        )
+        print(output)
+        # get base64 of url image
+        base64_output = []
+        for link in output:
+            response = requests.get(link)
+            image_data = response.content
+            base64_data = base64.b64encode(image_data)
+            base64_output.append(base64_data.decode('utf-8'))
+
+        return jsonify(base64_output)
 
     @app.route("/list_models", methods=['POST'])
     @jwt_required()
@@ -410,6 +429,6 @@ def start():
     app.run(host='0.0.0.0')
 
 if __name__ == "__main__":
-    prepare_environment()
+    # prepare_environment()
     start()
     

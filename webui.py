@@ -130,17 +130,18 @@ def initialize():
     modules.textual_inversion.textual_inversion.list_textual_inversion_templates()
     startup_timer.record("refresh textual inversion templates")
 
-    try:
-        modules.sd_models.load_model()
-    except Exception as e:
-        errors.display(e, "loading stable diffusion model")
-        print("", file=sys.stderr)
-        print("Stable diffusion model failed to load, exiting", file=sys.stderr)
-        exit(1)
+    # try:
+    #     modules.sd_models.load_model()
+    # except Exception as e:
+    #     errors.display(e, "loading stable diffusion model")
+    #     print("", file=sys.stderr)
+    #     print("Stable diffusion model failed to load, exiting", file=sys.stderr)
+    #     exit(1)
+    load_model(False)
     startup_timer.record("load SD checkpoint")
 
-    shared.opts.data["sd_model_checkpoint"] = shared.sd_model.sd_checkpoint_info.title
-
+    # shared.opts.data["sd_model_checkpoint"] = shared.sd_model.sd_checkpoint_info.title
+    # shared.opts.data["sd_model_checkpoint"] = ''
     shared.opts.onchange("sd_model_checkpoint", wrap_queued_call(lambda: modules.sd_models.reload_model_weights()))
     shared.opts.onchange("sd_vae", wrap_queued_call(lambda: modules.sd_vae.reload_vae_weights()), call=False)
     shared.opts.onchange("sd_vae_as_default", wrap_queued_call(lambda: modules.sd_vae.reload_vae_weights()), call=False)
@@ -180,6 +181,18 @@ def initialize():
 
     signal.signal(signal.SIGINT, sigint_handler)
 
+def load_model(initialize=True):
+    if initialize == False:
+        try:
+            modules.sd_models.load_model()
+        except Exception as e:
+            errors.display(e, "loading stable diffusion model")
+            print("", file=sys.stderr)
+            print("Stable diffusion model failed to load, exiting", file=sys.stderr)
+            exit(1)
+        shared.opts.data["sd_model_checkpoint"] = shared.sd_model.sd_checkpoint_info.title
+    else: 
+        shared.opts.data["sd_model_checkpoint"] = ''
 
 def setup_middleware(app):
     app.middleware_stack = None # reset current middleware to allow modifying user provided list
