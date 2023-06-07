@@ -429,6 +429,6 @@ def start():
     app.run(host='0.0.0.0')
 
 if __name__ == "__main__":
-    prepare_environment()
+    # prepare_environment()
     start()
     
