@@ -33,3 +33,5 @@ flask_jwt_extended
 PyJWT==2.6.0
 werkzeug
 replicate
+requests
+base64
