@@ -403,13 +403,13 @@ def start():
         print(output)
         # get base64 of url image
         base64_output = []
-        for link in output:
-            response = requests.get(link)
-            image_data = response.content
-            base64_data = base64.b64encode(image_data)
-            base64_output.append(base64_data.decode('utf-8'))
+        # for link in output:
+        #     response = requests.get(link)
+        #     image_data = response.content
+        #     base64_data = base64.b64encode(image_data)
+        #     base64_output.append(base64_data.decode('utf-8'))
 
-        return jsonify(base64_output)
+        return jsonify(output)
 
     @app.route("/list_models", methods=['POST'])
     @jwt_required()
